@@ -23,4 +23,4 @@ const couponSchema = new mongoose.Schema(
     
 )
 
-export default mongoose.Schema("Coupon", couponSchema)
+export default mongoose.model("Coupon", couponSchema)

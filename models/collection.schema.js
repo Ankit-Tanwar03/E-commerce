@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const collectionSchema = new mongoose.Schema(
     {
         name: {
-                String,
+                type: String,
                 required: [true, "Please provide a category name"],
                 trim: true,
                 maxLength: [120, "Collection should not be more than 120 characters"]
@@ -15,4 +15,4 @@ const collectionSchema = new mongoose.Schema(
     }
 )
 
-export default mongoose.Schema("Collection", collectionSchema)
+export default mongoose.model("Collection", collectionSchema)
