@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 import app from "./app";
 import config from "./config/index";
 
-(async => {
+(async() => {
     try {
-        await mongoose.connect(config.MONGODB_URL){
+        await mongoose.connect(config.MONGODB_URL)
             console.log("DB Connected");
 
             app.on('error', (err) => {
@@ -16,7 +16,6 @@ import config from "./config/index";
                 console.log(`Listening on Port ${config.PORT}`);
 
             })
-        }
         
     } catch (err) {
         console.log(err)
