@@ -102,3 +102,11 @@ export const logOut = asyncHandler( async (_req, res) => {      //_req is a good
         message: "Logged Out"
     })
 })
+
+/*
+@FORGOT PASSWORD
+@route http://localhost:4000/api/auth/forgotpassword
+@description - Allwoing user to generate new password
+@parameters - none
+@return success message
+*/
