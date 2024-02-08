@@ -2,6 +2,8 @@ import User from '../models/user.schema'
 import customError from '../utils/customError'
 import asyncHandler from '../services/asyncHandler'
 import cookieOptions from '../utils/cookieOptions'
+import mailHelper from '../utils/mailHelper'
+import crypto from 'crypto'
 
 /*
 @SIGNUP 
@@ -70,7 +72,7 @@ export const logIn = asyncHandler( async (req, res) => {
     if (isPasswordMatched){                                             //sending response if password matches
         const token = user.getJwtToken()
         user.password= undefined
-        const cookie = res.cookie("token", token, cookieOptions)
+        res.cookie("token", token, cookieOptions)
         res.status(200).json({
             success: true,
             token,
@@ -104,7 +106,7 @@ export const logOut = asyncHandler( async (_req, res) => {      //_req is a good
 })
 
 /*
-@FORGOT PASSWORD
+@FORGOT_PASSWORD
 @route http://localhost:4000/api/auth/password/forgot
 @description - User will submit an email and we will generate a token
 @parameters - email
@@ -151,7 +153,53 @@ export const forgotPassword = asyncHandler( async (req, res) => {
 
         await user.save({validateBeforeSave: false})
 
-        throw new CustomError(err.message || 'Email sent failure', 500)
+        throw new customError(err.message || 'Email sent failure', 500)
     }
+
+})
+
+/*
+@RESET_PASSWORD
+@route http://localhost:4000/api/auth/password/reset/:resetToken
+@description - User will be able to reset password based on url token
+@parameters - token from url, password and confirmPassword
+@return User Object
+*/
+
+export const resetPassword = asyncHandler ( async (req, res) => {
+    const {resetToken, password, confirmPassword} = req.params || req.body
+
+    const resetPasswordToken = crypto
+    .createHash('SHA256')
+    .update(resetToken)
+    .digest('hex')
+
+    const user = await User.findOne({
+        forgotPasswordToken: resetPasswordToken,
+        forgotPasswordExpiry: {$gt: Date.now()}
+    })
+
+    if(!user){
+        throw new customError ("Password link expired", 400)
+    }
+
+    if(!password !== confirmPassword){
+        throw new customError ("Password doesn't match", 400)
+    }
+
+    user.password = password
+    user.forgotPasswordToken = undefined
+    user.forgotPasswordExpiry = undefined
+
+    await user.save()
+
+    const token = user.getJwtToken()
+    user.password= undefined
+    res.cookie("token", token, cookieOptions)
+    res.status(200).json({
+        success: true,
+        token,
+        user
+    })
 
 })
