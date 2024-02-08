@@ -7,7 +7,7 @@ import cookieOptions from '../utils/cookieOptions'
 @SIGNUP 
 @route http://localhost:4000/api/auth/signup
 @description - User signup controller for creating new user
-@parameters - name, email, password, role
+@parameters - name, email, password
 @return User Object
 */
 
@@ -41,4 +41,45 @@ export const signUp = asyncHandler( async (req, res) => {
         token,
         user
     })
+})
+
+/*
+@LOGIN
+@route http://localhost:4000/api/auth/login
+@description - Allowing user to login with email and password
+@parameters - email, password
+@return User Object
+*/
+
+export const logIn = asyncHandler( async (req, res) => {
+    const {email, password} = req.body                                  //grabbing values from body
+
+    if(!(email || password)){                                           //validating all the fields
+        throw new customError("All fields are required", 400)
+    }
+
+    const user = await User.findOne({email}).select("+password")        //password select is false in model, but we need it to match password
+
+    if(!user){
+        throw new customError("Invalid credentials", 400)               //quering db is user exists
+    }
+
+
+    const isPasswordMatched = user.comparePassword(password)            //comparing  password with the help of comparePassword in model
+
+    if (isPasswordMatched){                                             //sending response if password matches
+        const token = user.getJwtToken()
+        user.password= undefined
+        const cookie = res.cookie("token", token, cookieOptions)
+        res.status(200).json({
+            success: true,
+            token,
+            user
+        })
+
+        throw new customError("Invalid credentials", 400)               //throwing error if password doesn't match
+    }
+
+
+
 })
