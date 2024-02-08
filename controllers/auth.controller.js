@@ -105,8 +105,53 @@ export const logOut = asyncHandler( async (_req, res) => {      //_req is a good
 
 /*
 @FORGOT PASSWORD
-@route http://localhost:4000/api/auth/forgotpassword
-@description - Allwoing user to generate new password
-@parameters - none
-@return success message
+@route http://localhost:4000/api/auth/password/forgot
+@description - User will submit an email and we will generate a token
+@parameters - email
+@return success message - email sent
 */
+
+export const forgotPassword = asyncHandler( async (req, res) => {
+    const {email} = req.body
+
+    if (!email){
+        throw new customError("Please enetr your email", 400)
+    }
+
+    const user = await findOne({email})
+    if(!user){
+        throw new customError("User doesn't exist", 400)
+    }
+
+    const resetToken = user.generateForgotPasswordToken()
+
+    await user.save({validateBeforeSave: false})
+
+    const resetUrl = 
+    `${req.protocol}://${req.get("host")}/api/auth/password/reset/${resetToken}`
+
+
+    const text = `Your password reset url is
+    \n\n ${resetUrl}\n\n`
+
+    try {
+        await mailHelper({
+            email: user.email,
+            subject: "Password reset email for website",
+            text:text,
+        })
+        res.status(200).json({
+            success: true,
+            message: `Email send to ${user.email}`
+        })
+    } catch (err) {
+        //roll back - clear fields and save
+        user.forgotPasswordToken = undefined
+        user.forgotPasswordExpiry = undefined
+
+        await user.save({validateBeforeSave: false})
+
+        throw new CustomError(err.message || 'Email sent failure', 500)
+    }
+
+})
