@@ -203,3 +203,25 @@ export const resetPassword = asyncHandler ( async (req, res) => {
     })
 
 })
+
+/*
+@GET_PROFILE
+@route http://localhost:4000/api/auth/profile
+@description - check for token and populate user.token
+@parameters - name, email, password 
+@return User Object
+*/
+
+export const getProfile = asyncHandler (async (req,res) => {
+    const {user} = req 
+
+    if(!user) {
+        throw customError("User not found", 400)
+    }
+
+    res.status(200).json({
+        success: true
+        token,
+        user
+    })
+})
