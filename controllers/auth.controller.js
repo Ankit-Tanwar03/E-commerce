@@ -122,7 +122,8 @@ export const forgotPassword = asyncHandler( async (req, res) => {
         throw new customError("Please enetr your email", 400)
     }
 
-    const user = await findOne({email})
+    const user = await User.findOne({email})
+    
     if(!user){
         throw new customError("User doesn't exist", 400)
     }
@@ -222,7 +223,7 @@ export const changePassword = asyncHandler (isLoggedIn, async(req,res) => {
         throw new customError("All fields are required to change password", 400)
     }
 
-    const isPasswordMatched = comparePassword(password)
+    const isPasswordMatched = user.comparePassword(password)
 
     if(isPasswordMatched){
         user.password = newPassword
