@@ -5,7 +5,6 @@ import cookieOptions from '../utils/cookieOptions'
 import mailHelper from '../utils/mailHelper'
 import crypto from 'crypto'
 import { isLoggedIn } from '../middleware/auth.middleware'
-import { compileFunction } from 'vm'
 
 /*
 @SIGNUP 
