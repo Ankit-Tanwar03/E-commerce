@@ -4,6 +4,8 @@ import asyncHandler from '../services/asyncHandler'
 import cookieOptions from '../utils/cookieOptions'
 import mailHelper from '../utils/mailHelper'
 import crypto from 'crypto'
+import { isLoggedIn } from '../middleware/auth.middleware'
+import { compileFunction } from 'vm'
 
 /*
 @SIGNUP 
@@ -202,6 +204,40 @@ export const resetPassword = asyncHandler ( async (req, res) => {
         user
     })
 
+})
+
+/*
+@CHANGE_PASSWORD
+@route http://localhost:4000/api/auth/changepassword
+@description - match the passowrd in the database and allow user to exxnter new password
+@parameters - password, new_password
+@return User Object
+*/
+
+export const changePassword = asyncHandler (isLoggedIn, async(req,res) => {
+    const {password, newPassword} = req.body
+    const {user} = req
+
+    if(!(password||newPassword)){
+        throw new customError("All fields are required to change password", 400)
+    }
+
+    const isPasswordMatched = comparePassword(password)
+
+    if(isPasswordMatched){
+        user.password = newPassword
+
+        await user.save()
+        user.password = undefined
+
+        res.status(200).json({
+            success: true,
+            message: "password changed successfully",
+            user
+        })
+
+        throw new customError("Entered Password is incorrect", 400)
+    }
 })
 
 /*
