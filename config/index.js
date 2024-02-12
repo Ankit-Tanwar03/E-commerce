@@ -11,7 +11,14 @@ const config = {
     SMTP_MAIL_PORT : process.env.SMTP_MAIL_PORT,
     SMTP_MAIL_USER : process.env.SMTP_MAIL_USER,
     SMTP_MAIL_PASS : process.env.SMTP_MAIL_PASS,
-    SMTP_MAIL_EMAIL :process.env.SMTP_MAIL_EMAIL 
+    SMTP_MAIL_EMAIL :process.env.SMTP_MAIL_EMAIL,
+    S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
+    S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+    S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+    S3_REGION: process.env.S3_REGION,
+
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    RAZORPAY_SECRET: process.env.RAZORPAY_SECRET 
 }
 
 export default config
