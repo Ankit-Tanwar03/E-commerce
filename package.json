@@ -19,7 +19,8 @@
     "formidable": "^3.5.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
-    "nodemailer": "^6.9.9"
+    "nodemailer": "^6.9.9",
+    "razorpay": "^2.9.2"
   },
   "devDependencies": {
     "morgan": "^1.10.0"
